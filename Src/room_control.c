@@ -20,6 +20,10 @@ static volatile uint32_t g_last_button_tick = 0;
 // 1. Control automático de iluminación
 static volatile uint8_t g_lamp_on = 0;
 static volatile uint32_t g_lamp_idle_brightness = 20;
+// 7. animatcion de lampara
+static volatile uint8_t g_lamp_animation = 0;
+static volatile uint32_t g_lamp_animation_tick = 0;
+
 
 
 void room_control_app_init(void)
@@ -132,6 +136,16 @@ void room_control_on_uart_receive(char cmd)
             uart2_send_string("  's': Ver estado actual (lámpara y puerta)\r\n");
             uart2_send_string("  '?', 'h': Mostrar esta ayuda\r\n");
             break;
+
+        // 7. Comando para incrememntar brillo de la lámpara
+        case 'g':
+        case 'G':
+            g_lamp_idle_brightness = 0;
+            tim3_ch1_pwm_set_duty_cycle(g_lamp_idle_brightness);
+            g_lamp_animation = 1;
+            g_lamp_animation_tick = systick_get_tick();
+            uart2_send_string("Animación de lámpara iniciada.\r\n");
+            break;
         default:
             uart2_send_string("Comando desconocido.\r\n");
             break;
@@ -150,5 +164,18 @@ void room_control_tick(void)
         tim3_ch1_pwm_set_duty_cycle(g_lamp_idle_brightness);
         uart2_send_string("Lámpara restaurada automáticamente tras 10 segundos.\r\n");
         g_lamp_on = 0;
+    }
+
+    // 7. Transición gradual de brillo
+    if (g_lamp_animation && (systick_get_tick() - g_lamp_animation_tick >= 500)) {
+        g_lamp_animation_tick = systick_get_tick();
+        if (g_lamp_idle_brightness < 100) {
+            g_lamp_idle_brightness += 10; // Incrementa el brillo en 10%
+        } else {
+            g_lamp_animation = 0; // Detiene la animación al llegar a 100%
+            g_lamp_idle_brightness = 20; // Resetea a 20% si supera 100%
+            uart2_send_string("Animación de lámpara completada.\r\n");
+        }
+        tim3_ch1_pwm_set_duty_cycle(g_lamp_idle_brightness);
     }
 }
