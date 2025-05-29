@@ -120,6 +120,18 @@ void room_control_on_uart_receive(char cmd)
             uart2_send_string(g_door_open ? "  - Puerta: Abierta\r\n" : "  - Puerta: Cerrada\r\n");
             break;
 
+        // 6. Comando de ayuda UART 
+        case '?':
+        case 'h':
+        case 'H':
+            uart2_send_string("Comandos disponibles:\r\n");
+            uart2_send_string("  '1'-'4': Ajustar brillo lámpara (100%, 70%, 50%, 20%)\r\n");
+            uart2_send_string("  '0': Apagar lámpara\r\n");
+            uart2_send_string("  'o': Abrir puerta remotamente\r\n");
+            uart2_send_string("  'c': Cerrar puerta remotamente\r\n");
+            uart2_send_string("  's': Ver estado actual (lámpara y puerta)\r\n");
+            uart2_send_string("  '?', 'h': Mostrar esta ayuda\r\n");
+            break;
         default:
             uart2_send_string("Comando desconocido.\r\n");
             break;
