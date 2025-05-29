@@ -17,13 +17,19 @@ static volatile uint32_t g_door_open_tick = 0;
 static volatile uint8_t g_door_open = 0;
 static volatile uint32_t g_last_button_tick = 0;
 
+// 1. Control automático de iluminación
+static volatile uint8_t g_lamp_on = 0;
+static volatile uint32_t g_lamp_idle_brightness = 20;
+
+
 void room_control_app_init(void)
 {
     gpio_write_pin(EXTERNAL_LED_ONOFF_PORT, EXTERNAL_LED_ONOFF_PIN, GPIO_PIN_RESET);
     g_door_open = 0;
     g_door_open_tick = 0;
 
-    tim3_ch1_pwm_set_duty_cycle(20); // Lámpara al 20%
+    tim3_ch1_pwm_set_duty_cycle(g_lamp_idle_brightness); // Lámpara al 20%
+    g_lamp_on = 0;
 }
 
 void room_control_on_button_press(void)
@@ -37,33 +43,42 @@ void room_control_on_button_press(void)
     gpio_write_pin(EXTERNAL_LED_ONOFF_PORT, EXTERNAL_LED_ONOFF_PIN, GPIO_PIN_SET);
     g_door_open_tick = now;
     g_door_open = 1;
+    // 1. Control automático de iluminación
+    tim3_ch1_pwm_set_duty_cycle(100);
+    uart2_send_string("Lámpara encendida al 100%.\r\n");
+    g_lamp_on = 1;
 }
 
 void room_control_on_uart_receive(char cmd)
 {
     switch (cmd) {
         case '1':
-            tim3_ch1_pwm_set_duty_cycle(100);
+            g_lamp_idle_brightness = 100;
+            tim3_ch1_pwm_set_duty_cycle(g_lamp_idle_brightness);
             uart2_send_string("Lámpara: brillo al 100%.\r\n");
             break;
 
         case '2':
-            tim3_ch1_pwm_set_duty_cycle(70);
+            g_lamp_idle_brightness = 70;
+            tim3_ch1_pwm_set_duty_cycle(g_lamp_idle_brightness);
             uart2_send_string("Lámpara: brillo al 70%.\r\n");
             break;
 
         case '3':
-            tim3_ch1_pwm_set_duty_cycle(50);
+            g_lamp_idle_brightness = 50;
+            tim3_ch1_pwm_set_duty_cycle(g_lamp_idle_brightness);
             uart2_send_string("Lámpara: brillo al 50%.\r\n");
             break;
 
         case '4':
-            tim3_ch1_pwm_set_duty_cycle(20);
+            g_lamp_idle_brightness = 20;
+            tim3_ch1_pwm_set_duty_cycle(g_lamp_idle_brightness);
             uart2_send_string("Lámpara: brillo al 20%.\r\n");
             break;
 
         case '0':
-            tim3_ch1_pwm_set_duty_cycle(0);
+            g_lamp_idle_brightness = 0;
+            tim3_ch1_pwm_set_duty_cycle(g_lamp_idle_brightness);
             uart2_send_string("Lámpara apagada.\r\n");
             break;
 
@@ -94,5 +109,11 @@ void room_control_tick(void)
         gpio_write_pin(EXTERNAL_LED_ONOFF_PORT, EXTERNAL_LED_ONOFF_PIN, GPIO_PIN_RESET);
         uart2_send_string("Puerta cerrada automáticamente tras 3 segundos.\r\n");
         g_door_open = 0;
+    }
+    // 1. Control automático de iluminación
+    if (g_lamp_on && (systick_get_tick() - g_door_open_tick >= 10000)) {
+        tim3_ch1_pwm_set_duty_cycle(g_lamp_idle_brightness);
+        uart2_send_string("Lámpara restaurada automáticamente tras 10 segundos.\r\n");
+        g_lamp_on = 0;
     }
 }
