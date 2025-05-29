@@ -30,14 +30,18 @@ void uart2_init(uint32_t baud_rate)
     // 3. Configurar USART2
     //    Deshabilitar USART antes de configurar (importante si se reconfigura)
     USART2->CR1 &= ~(0x01 << 0);
-
+    
     // Configurar Baud Rate (USARTDIV en BRR)
     // USARTDIV = fCK_USART / BaudRate
     uint32_t usart_div = (PCLK1_FREQ_HZ + (baud_rate / 2U)) / baud_rate; // Con redondeo
     USART2->BRR = usart_div;
-
+    
     // Habilitar Transmisor (TE) y Receptor (RE)
     USART2->CR1 |= (0x01 << 2 | 0x01 << 3);
+
+    // 2. Activar bit de paridad UART (9-bit data incluyendo odd parity, RM0351:1366)
+    USART2->CR1 |= (0x01 << 12); // Configurar M[1:0] bit
+    USART2->CR1 |= (0x01 << 10) | (0x01 << 9); // Odd PE bit en CR1
 
     // Finalmente, habilitar USART (UE bit en CR1)
     USART2->CR1 |= 0x01 << 0;
