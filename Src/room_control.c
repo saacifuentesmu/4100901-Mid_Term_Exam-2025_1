@@ -104,6 +104,22 @@ void room_control_on_uart_receive(char cmd)
             uart2_send_string("Puerta cerrada remotamente.\r\n");
             break;
 
+        // 5. Comando UART para ver estado actual
+        case 's':
+        case 'S':
+            uart2_send_string("Estado:\r\n");
+            uart2_send_string("  - Lámpara: ");
+            if (g_lamp_idle_brightness == 0) {
+                uart2_send_string("0%\r\n");
+            } else {
+                uart2_send_string(g_lamp_idle_brightness == 100 ? "100%\r\n" :
+                    g_lamp_idle_brightness == 70 ? "70%\r\n" :
+                    g_lamp_idle_brightness == 50 ? "50%\r\n" :
+                    g_lamp_idle_brightness == 20 ? "20%\r\n" : "Desconocido\r\n");
+            }
+            uart2_send_string(g_door_open ? "  - Puerta: Abierta\r\n" : "  - Puerta: Cerrada\r\n");
+            break;
+
         default:
             uart2_send_string("Comando desconocido.\r\n");
             break;
