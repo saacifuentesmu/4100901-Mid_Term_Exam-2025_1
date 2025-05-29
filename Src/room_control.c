@@ -30,6 +30,13 @@ void room_control_app_init(void)
 
     tim3_ch1_pwm_set_duty_cycle(g_lamp_idle_brightness); // Lámpara al 20%
     g_lamp_on = 0;
+
+    // 4. Mensaje de bienvenida 
+    uart2_send_string("\r\nControlador de Sala v1.0\r\n");
+    uart2_send_string("Desarrollador: Sam C\r\n");
+    uart2_send_string("Estado inicial:\r\n");
+    uart2_send_string("  - Lámpara: 20%\r\n");
+    uart2_send_string("  - Puerta: Cerrada\r\n");
 }
 
 void room_control_on_button_press(void)
