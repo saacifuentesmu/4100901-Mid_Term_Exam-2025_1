@@ -11,8 +11,9 @@
 
 void tim3_ch1_pwm_init(uint32_t pwm_freq_hz)
 {
-    // 1. Configurar PB4 como Alternate Function (AF2) para TIM3_CH1
-    gpio_setup_pin(EXTERNAL_LED_PWM_PORT, EXTERNAL_LED_PWM_PIN, GPIO_MODE_AF, 2);
+    // Este PWM controla el VENTILADOR
+    // 1. Configurar PA6 como Alternate Function (AF2) para TIM3_CH1
+    gpio_setup_pin(GPIOA, 6, GPIO_MODE_AF, 2);
 
     // 2. Habilitar el reloj para TIM3
     rcc_tim3_clock_enable();
@@ -43,4 +44,28 @@ void tim3_ch1_pwm_set_duty_cycle(uint8_t duty_cycle_percent)
     uint32_t ccr_value = (((uint32_t)tim3_ch1_arr_value + 1U) * duty_cycle_percent) / 100U;
 
     TIM3->CCR1 = ccr_value;
+}
+
+// --- Funciones para el Estudiante ---
+
+void tim4_ch1_pwm_init(uint32_t pwm_freq_hz) {
+    // EJERCICIO 3: El estudiante debe implementar esta función.
+    // Pasos:
+    // 1. Configurar el pin PB6 como Alternate Function (AF2) para TIM4_CH1.
+    //    - No olvide habilitar el reloj para el puerto GPIO correspondiente.
+    // 2. Habilitar el reloj para TIM4 usando la función rcc_tim4_clock_enable().
+    // 3. Configurar los registros de TIM4: PSC (Prescaler) y ARR (Auto-Reload).
+    //    - Calcule los valores para obtener la pwm_freq_hz deseada.
+    // 4. Configurar el Canal 1 (CH1) de TIM4 en modo PWM.
+    //    - Escriba en los registros CCMR1 y CCER.
+    // 5. Habilitar el contador del timer (CEN bit en CR1).
+}
+
+void tim4_ch1_pwm_set_duty_cycle(uint8_t duty_cycle_percent) {
+    // EJERCICIO 3: El estudiante debe implementar esta función.
+    // Pasos:
+    // 1. Validar que duty_cycle_percent no sea mayor a 100.
+    // 2. Calcular el valor para el registro de captura/comparación (CCR1).
+    //    - CCR1 = ((ARR + 1) * duty_cycle) / 100
+    // 3. Escribir el valor calculado en TIM4->CCR1.
 }

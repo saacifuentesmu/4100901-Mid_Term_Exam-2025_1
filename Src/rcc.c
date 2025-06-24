@@ -32,3 +32,8 @@ void rcc_tim3_clock_enable(void)
 {
     RCC->APB1ENR1 |= 0x01 << 1; // TIM3 clock enable
 }
+
+void rcc_tim4_clock_enable(void)
+{
+    RCC->APB1ENR1 |= 0x01 << 2; // TIM4 clock enable
+}

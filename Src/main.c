@@ -10,7 +10,7 @@
 #include "nvic.h"
 #include "uart.h"
 #include "tim.h"
-#include "room_control.h"
+#include "incubator_control.h"
 
 void heartbeat_led_toggle(void)
 {
@@ -42,20 +42,23 @@ int main(void)
     nvic_exti_pc13_button_enable();
 
     // USART2
-    uart2_init(115200);
+    uart2_init(9600); // Tarea del estudiante: cambiar a 115200
     nvic_usart2_irq_enable();
 
-    // TIM3 Canal 1 para PWM
-    tim3_ch1_pwm_init(1000); // ej. 1000 Hz
-    tim3_ch1_pwm_set_duty_cycle(70); // ej. 50%
+    // TIM3 Canal 1 para PWM (Ventilador)
+    tim3_ch1_pwm_init(1000); // 1000 Hz para el ventilador
+    
+    // Calefactor (Pin GPIO)
+    gpio_setup_pin(GPIOB, 10, GPIO_MODE_OUTPUT, 0);
 
-    // Inicialización de la Lógica de la Aplicación (room_control)
-    room_control_app_init();
+    // Inicialización de la Lógica de la Aplicación
+    incubator_app_init();
 
-    // Mensaje de bienvenida o estado inicial (puede estar en room_control_app_init o aquí)
-    uart2_send_string("\r\nSistema Inicializado. Esperando eventos...\r\n");
+    // Mensaje de estado
+    uart2_send_string("\r\nSistema Inicializado. Esperando comandos...\r\n");
     while (1) {
         heartbeat_led_toggle();
+        incubator_run(); // Ejecutar la lógica principal de la aplicación
     }
 }
 

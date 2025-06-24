@@ -55,5 +55,6 @@ void rcc_gpio_clock_enable(GPIO_TypeDef *gpio_port);
 void rcc_syscfg_clock_enable(void);
 void rcc_usart2_clock_enable(void);
 void rcc_tim3_clock_enable(void);
+void rcc_tim4_clock_enable(void);
 
 #endif // RCC_H

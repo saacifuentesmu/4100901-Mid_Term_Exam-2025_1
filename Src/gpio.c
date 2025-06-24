@@ -8,7 +8,7 @@
 #include "gpio.h"
 #include "rcc.h"
 #include "nvic.h"
-#include "room_control.h"
+#include "incubator_control.h"
 
 void gpio_setup_pin(GPIO_TypeDef *gpio_port, uint8_t pin_number,
                     uint8_t mode, uint8_t alternate_function)
@@ -68,7 +68,7 @@ uint8_t gpio_read_pin(GPIO_TypeDef *gpio_port, uint8_t pin_number)
  * @brief Rutina de Servicio de Interrupción para EXTI líneas 10 a 15.
  *        Este nombre debe coincidir exactamente con el definido en la tabla de vectores
  *        del archivo de arranque (startup_stm32l476rgtx.s).
- *        Esta ISR puede ser llamada por room_control.c si la lógica es compleja.
+ *        Llama a la función correspondiente en la capa de aplicación.
  */
 void EXTI15_10_IRQHandler(void) {
     // 1. Verificar si la interrupción fue de la línea EXTI13
@@ -76,7 +76,7 @@ void EXTI15_10_IRQHandler(void) {
         // 2. Limpiar el flag de pendiente de la interrupción (escribiendo '1')
         EXTI->PR1 |= (1U << 13);
         // 3. Procesar boton presionado
-        room_control_on_button_press();
+        incubator_on_button_press();
     }
 }
 
