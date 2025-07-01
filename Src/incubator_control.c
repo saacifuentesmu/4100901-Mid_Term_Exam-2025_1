@@ -31,8 +31,8 @@ bool en_alarma = false;
 // --- Definiciones de pines y constantes ---
 // Ventilador (PWM) -> PA6, TIM3_CH1
 // Calefactor (GPIO) -> PB10
-#define HEATER_PORT GPIOB
-#define HEATER_PIN  GPIO_PIN_10
+// #define HEATER_PORT GPIOB
+// #define HEATER_PIN  GPIO_PIN_10
 
 static uint8_t fan_speed = 20; // Velocidad inicial del ventilador
 
