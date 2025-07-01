@@ -18,7 +18,7 @@ Este estado de "emergencia" debe persistir hasta que el usuario envíe el comand
 *   **Recomendación:** Use `systick_get_tick()` para implementar el parpadeo de forma no bloqueante.
 
 ---
-#### 2. Control Avanzado del Calefactor con un Nuevo Timer [20%]
+#### 2. Control Avanzado del Calefactor con un Nuevo Timer [30%]
 Actualmente, el calefactor se maneja como un pin digital simple (ON/OFF). Modifique el sistema para:
 1.  Configurar el pin `PB6` para que use su función alternativa como `TIM4_CH1`.
 2.  Configurar el periférico **Timer 4** para generar una señal PWM de 1 Hz.
@@ -27,21 +27,13 @@ Actualmente, el calefactor se maneja como un pin digital simple (ON/OFF). Modifi
 *   **Recomendación:** No olvide habilitar el reloj para el periférico TIM4 y configurar el GPIO en modo de función alternativa.
 
 ---
-#### 3. Mensaje de Bienvenida [10%]
-Al iniciar, mostrar por UART un mensaje de bienvenida estático.
-```
-Controlador de Incubadora v1.0
-Listo.
-```
-
----
-#### 4. Comando para Configurar Umbral de Temperatura [20%]
+#### 3. Comando para Configurar Umbral de Temperatura [20%]
 Implemente un comando UART que permita al usuario cambiar el `UMBRAL_TEMPERATURA`. El formato del comando será `X`, donde `X` es un dígito decimal que regula la temperatura de 20°C a 40°C en pasos de 2°C. Por ejemplo, enviar `4` por la terminal debe actualizar el umbral a 28°C.
 
 *   **Recomendación:** Recuerde que los datos recibidos por UART son caracteres. Deberá convertirlos a un valor numérico.
 
 ---
-#### 5. Comando de Ayuda Dinámico [10%]
+#### 4. Comando de Ayuda Dinámico [10%]
 Implemente el comando `'?'` que muestre los comandos disponibles y el valor *actual* del umbral de temperatura.
 ```
 Comandos:
